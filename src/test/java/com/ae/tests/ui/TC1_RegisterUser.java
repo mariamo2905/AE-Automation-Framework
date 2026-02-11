@@ -1,5 +1,6 @@
 package com.ae.tests.ui;
 
+import com.ae.tests.utils.ScreenshotUtil;
 import com.ae.utils.DriverManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
@@ -7,6 +8,7 @@ import io.qameta.allure.SeverityLevel;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
@@ -24,7 +26,7 @@ public class TC1_RegisterUser {
         driver.get("https://automationexercise.com/login");
 
         // Generate unique email
-        String uniqueEmail = "test" + UUID.randomUUID().toString().substring(0,5) + "@example.com";
+        String uniqueEmail = "test" + UUID.randomUUID().toString().substring(0, 5) + "@example.com";
 
         driver.findElement(By.name("name")).sendKeys("Test User");
         driver.findElement(By.xpath("//input[@data-qa='signup-email']")).sendKeys(uniqueEmail);
@@ -57,7 +59,10 @@ public class TC1_RegisterUser {
     }
 
     @AfterMethod(alwaysRun = true)
-    public void tearDown() {
+    public void tearDown(ITestResult result) {
+        if (!result.isSuccess()) {
+            ScreenshotUtil.takeScreenshot(DriverManager.getDriver());
+        }
         DriverManager.quitDriver();
     }
 }
