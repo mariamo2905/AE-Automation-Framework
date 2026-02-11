@@ -1,6 +1,6 @@
 package com.ae.tests.ui;
 
-import com.ae.tests.utils.ScreenshotUtil;
+import com.ae.utils.ScreenshotUtil;
 import com.ae.utils.DriverManager;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
