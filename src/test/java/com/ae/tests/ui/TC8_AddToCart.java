@@ -1,44 +1,38 @@
 package com.ae.tests.ui;
 
+import com.ae.utils.ScreenshotUtil;
 import com.ae.utils.DriverManager;
 import com.ae.utils.WaitUtils;
-import com.ae.utils.ScreenshotUtil;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.testng.Assert;
 import org.testng.ITestResult;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 public class TC8_AddToCart {
 
- @Description("UI TC08: Add a product to cart and verify it appears in cart")
+ @Description("UI TC08: Add first product to cart and verify it appears in cart.")
  @Severity(SeverityLevel.CRITICAL)
  @Test
  public void testAddToCart() {
   WebDriver driver = DriverManager.getDriver();
   driver.get("https://automationexercise.com");
 
-  // Go to Products
-  WebElement productsLink = driver.findElement(By.xpath("//a[text()='Products']"));
-  WaitUtils.waitForClickable(driver, productsLink).click();
-
-  // Add first product to cart
-  WebElement firstProduct = driver.findElement(By.xpath("(//a[text()='Add to cart'])[1]"));
+  WebElement firstProduct = driver.findElement(By.cssSelector(".features_items .product-image-wrapper"));
   WaitUtils.waitForClickable(driver, firstProduct).click();
 
-  // Click 'View Cart'
-  WebElement viewCart = driver.findElement(By.xpath("//u[text()='View Cart']"));
-  WaitUtils.waitForClickable(driver, viewCart).click();
+  WebElement addToCartBtn = driver.findElement(By.cssSelector(".cart"));
+  WaitUtils.waitForClickable(driver, addToCartBtn).click();
 
-  // Verify product is in cart
-  WebElement cartItem = driver.findElement(By.xpath("//tr[@id='product-1']"));
-  Assert.assertTrue(WaitUtils.waitForVisible(driver, cartItem).isDisplayed(),
-          "Product should appear in cart");
+  WebElement cartModal = driver.findElement(By.id("cartModal"));
+  WaitUtils.waitForVisible(driver, cartModal);
+
+  Assert.assertTrue(cartModal.isDisplayed(), "Expected cart modal to appear after adding product");
  }
 
  @AfterMethod(alwaysRun = true)

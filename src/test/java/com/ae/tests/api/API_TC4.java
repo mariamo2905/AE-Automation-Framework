@@ -11,8 +11,8 @@ import static org.hamcrest.Matchers.*;
 
 public class API_TC4 {
 
-    @Test(description = "API TC04: PUT To All Brands List (expected behavior check)")
-    @Description("Sends PUT to /brandsList and validates server responds (status code and body).")
+    @Test(description = "API TC04: PUT To All Brands List")
+    @Description("Sends PUT to /brandsList and validates server response (status code and body).")
     @Severity(SeverityLevel.NORMAL)
     public void putToBrandsList() {
         RestAssured.given()

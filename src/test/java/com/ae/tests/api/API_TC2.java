@@ -11,8 +11,8 @@ import static org.hamcrest.Matchers.*;
 
 public class API_TC2 {
 
-    @Test(description = "API TC02: POST To All Products List (expected behavior check)")
-    @Description("Sends POST to /productsList and validates server responds (status code and body).")
+    @Test(description = "API TC02: POST To All Products List")
+    @Description("Sends POST to /productsList and validates server response (status code and body).")
     @Severity(SeverityLevel.NORMAL)
     public void postToProductsList() {
         RestAssured.given()
@@ -21,7 +21,7 @@ public class API_TC2 {
                 .when()
                 .post("/productsList")
                 .then()
-                .statusCode(anyOf(is(200), is(405)))   // site sometimes returns 200 with error msg OR 405
+                .statusCode(anyOf(is(200), is(405))) // API may allow or block POST
                 .body(notNullValue());
     }
 }
