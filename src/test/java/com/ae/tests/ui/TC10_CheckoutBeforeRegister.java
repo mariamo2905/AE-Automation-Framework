@@ -1,6 +1,5 @@
 package com.ae.tests.ui;
 
-import com.ae.utils.ScreenshotUtil;
 import com.ae.utils.DriverManager;
 import com.ae.utils.WaitUtils;
 import io.qameta.allure.Description;
@@ -9,37 +8,40 @@ import io.qameta.allure.SeverityLevel;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.testng.ITestResult;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 public class TC10_CheckoutBeforeRegister {
 
- @Description("UI TC10: Try to checkout without registering and verify warning message.")
+ @Description("UI TC10: Verify checkout before login shows Register/Login popup.")
  @Severity(SeverityLevel.CRITICAL)
  @Test
  public void testCheckoutBeforeRegister() {
+
   WebDriver driver = DriverManager.getDriver();
   driver.get("https://automationexercise.com");
 
-  WebElement cartBtn = driver.findElement(By.xpath("//a[@href='/view_cart']"));
-  WaitUtils.waitForClickable(driver, cartBtn).click();
+  // Click 'Cart' link in the header (or wherever your cart icon is)
+  driver.findElement(By.xpath("//a[contains(text(),'Cart')]")).click();
 
-  WebElement checkoutBtn = driver.findElement(By.xpath("//a[text()='Proceed To Checkout']"));
-  WaitUtils.waitForClickable(driver, checkoutBtn).click();
+  // Click 'Proceed To Checkout' in the cart page
+  driver.findElement(By.xpath("//a[contains(text(),'Proceed To Checkout')]")).click();
 
-  WebElement loginPrompt = driver.findElement(By.xpath("//h2[text()='Login to your account']"));
-  WaitUtils.waitForVisible(driver, loginPrompt);
+  // Wait for the popup heading 'Checkout'
+  WebElement popupHeader = WaitUtils.waitForVisible(
+          driver,
+          By.xpath("//h2[contains(text(),'Checkout')]")
+  );
+  Assert.assertTrue(popupHeader.isDisplayed(), "Expected checkout popup to appear.");
 
-  Assert.assertTrue(loginPrompt.isDisplayed(), "Expected login prompt when checking out without registration");
- }
+  // Verify popup text contains 'Register / Login account to proceed on checkout.'
+  WebElement popupText = driver.findElement(
+          By.xpath("//p[contains(text(),'Register / Login account to proceed on checkout.')]")
+  );
+  Assert.assertTrue(popupText.isDisplayed(), "Expected popup message about registering/logging in.");
 
- @AfterMethod(alwaysRun = true)
- public void tearDown(ITestResult result) {
-  if (!result.isSuccess()) {
-   ScreenshotUtil.takeScreenshot(DriverManager.getDriver());
-  }
-  DriverManager.quitDriver();
+  // Verify 'Register / Login' button exists in the popup
+  WebElement registerLoginBtn = driver.findElement(By.xpath("//a[contains(text(),'Register / Login')]"));
+  Assert.assertTrue(registerLoginBtn.isDisplayed(), "Expected Register/Login button in checkout popup.");
  }
 }

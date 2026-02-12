@@ -1,47 +1,73 @@
 package com.ae.tests.ui;
 
-import com.ae.utils.ScreenshotUtil;
 import com.ae.utils.DriverManager;
+import com.ae.utils.ScreenshotUtil;
 import com.ae.utils.WaitUtils;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.testng.ITestResult;
+import org.openqa.selenium.*;
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
 public class TC9_CheckoutRegister {
 
+ @Test
  @Description("UI TC09: Go to checkout, register a new user, and verify checkout page.")
  @Severity(SeverityLevel.CRITICAL)
- @Test
  public void testCheckoutRegister() {
   WebDriver driver = DriverManager.getDriver();
   driver.get("https://automationexercise.com");
 
-  WebElement cartBtn = driver.findElement(By.xpath("//a[@href='/view_cart']"));
-  WaitUtils.waitForClickable(driver, cartBtn).click();
+  closeAds(driver);
 
-  WebElement checkoutBtn = driver.findElement(By.xpath("//a[text()='Proceed To Checkout']"));
-  WaitUtils.waitForClickable(driver, checkoutBtn).click();
+  // 1️⃣ Add first product to cart safely
+  WebElement addToCartBtn = WaitUtils.waitForClickable(driver,
+          By.xpath("(//a[contains(@class,'add-to-cart')])[1]"));
+  WaitUtils.clickJS(driver, addToCartBtn);
 
-  WebElement nameInput = driver.findElement(By.name("name"));
-  WaitUtils.waitForVisible(driver, nameInput).sendKeys("Test User");
+  // Close modal if "Continue Shopping" appears
+  try {
+   WebElement continueBtn = WaitUtils.waitForVisible(driver,
+           By.xpath("//button[normalize-space()='Continue Shopping']"));
+   WaitUtils.clickJS(driver, continueBtn);
+  } catch (Exception ignored) {}
 
-  WebElement emailInput = driver.findElement(By.xpath("//input[@data-qa='signup-email']"));
-  emailInput.sendKeys("testuser" + System.currentTimeMillis() + "@example.com");
+  // 2️⃣ Go to Cart
+  WaitUtils.waitAndClickJS(driver, By.xpath("//a[@href='/view_cart']"));
 
-  WebElement signupBtn = driver.findElement(By.xpath("//button[@data-qa='signup-button']"));
-  WaitUtils.waitForClickable(driver, signupBtn).click();
+  // 3️⃣ Proceed To Checkout
+  WebElement checkoutBtn = WaitUtils.waitForClickable(driver,
+          By.xpath("//a[contains(text(),'Proceed To Checkout')]"));
+  WaitUtils.clickJS(driver, checkoutBtn);
 
-  WebElement createAccountBtn = driver.findElement(By.xpath("//button[@data-qa='create-account']"));
-  WaitUtils.waitForVisible(driver, createAccountBtn);
+  // 4️⃣ Click Register / Login
+  WebElement registerLink = WaitUtils.waitForClickable(driver,
+          By.xpath("//u[normalize-space()='Register / Login']"));
+  WaitUtils.clickJS(driver, registerLink);
 
-  Assert.assertTrue(createAccountBtn.isDisplayed(), "Expected 'Create Account' button to appear during checkout registration");
+  // 5️⃣ Fill signup form
+  WaitUtils.waitForVisible(driver, By.name("name")).sendKeys("Test User");
+  driver.findElement(By.xpath("//input[@data-qa='signup-email']"))
+          .sendKeys("testuser" + System.currentTimeMillis() + "@example.com");
+  WaitUtils.waitAndClickJS(driver, By.xpath("//button[@data-qa='signup-button']"));
+
+  // 6️⃣ Verify Create Account page appears
+  WebElement createAccountBtn = WaitUtils.waitForVisible(driver,
+          By.xpath("//button[@data-qa='create-account']"));
+  Assert.assertTrue(createAccountBtn.isDisplayed(),
+          "Expected 'Create Account' button to appear.");
+ }
+
+ private void closeAds(WebDriver driver) {
+  try {
+   Thread.sleep(500);
+   for (WebElement iframe : driver.findElements(By.xpath("//iframe[contains(@id,'aswift')]"))) {
+    ((JavascriptExecutor) driver).executeScript("arguments[0].remove();", iframe);
+   }
+  } catch (InterruptedException | StaleElementReferenceException ignored) {}
  }
 
  @AfterMethod(alwaysRun = true)

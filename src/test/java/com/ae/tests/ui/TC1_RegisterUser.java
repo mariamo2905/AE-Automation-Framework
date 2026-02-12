@@ -2,6 +2,7 @@ package com.ae.tests.ui;
 
 import com.ae.utils.ScreenshotUtil;
 import com.ae.utils.DriverManager;
+import com.ae.utils.TestData;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
@@ -22,19 +23,24 @@ public class TC1_RegisterUser {
     public void testRegisterUser() {
 
         WebDriver driver = DriverManager.getDriver();
-
         driver.get("https://automationexercise.com/login");
 
-        // Generate unique email
+        // Generate unique email & password
         String uniqueEmail = "test" + UUID.randomUUID().toString().substring(0, 5) + "@example.com";
+        String password = "Password123";
 
+        // ✅ Store correctly
+        TestData.setEmail(uniqueEmail);
+        TestData.setPassword(password);
+
+        // Fill registration form
         driver.findElement(By.name("name")).sendKeys("Test User");
         driver.findElement(By.xpath("//input[@data-qa='signup-email']")).sendKeys(uniqueEmail);
         driver.findElement(By.xpath("//button[@data-qa='signup-button']")).click();
 
-        // Fill minimal required fields
+        // Required fields
         driver.findElement(By.id("id_gender1")).click();
-        driver.findElement(By.id("password")).sendKeys("Password123");
+        driver.findElement(By.id("password")).sendKeys(password);
 
         driver.findElement(By.id("days")).sendKeys("10");
         driver.findElement(By.id("months")).sendKeys("May");
@@ -51,7 +57,7 @@ public class TC1_RegisterUser {
 
         driver.findElement(By.xpath("//button[@data-qa='create-account']")).click();
 
-        // Assertion
+        // Verify account created
         Assert.assertTrue(
                 driver.getPageSource().toLowerCase().contains("account created"),
                 "Expected account creation success message."

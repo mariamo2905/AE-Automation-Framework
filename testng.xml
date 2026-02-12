@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
-<suite name="Automation Exercise Suite" parallel="tests" thread-count="4">
+<suite name="Automation Exercise Suite" parallel="tests" thread-count="2">
 
     <!-- API Tests -->
     <test name="API Tests" parallel="methods" thread-count="5">
@@ -10,10 +10,19 @@
     </test>
 
     <!-- UI Tests -->
-    <test name="UI Tests" parallel="methods" thread-count="5">
-        <packages>
-            <package name="com.ae.tests.ui"/>
-        </packages>
+    <test name="UI Tests" parallel="classes" thread-count="5">
+        <classes>
+            <class name="com.ae.tests.ui.TC1_RegisterUser"/>
+            <class name="com.ae.tests.ui.TC2_LoginValid"/>
+            <class name="com.ae.tests.ui.TC3_LoginInvalid"/>
+            <class name="com.ae.tests.ui.TC4_Logout"/>
+            <class name="com.ae.tests.ui.TC5_ContactUs"/>
+            <class name="com.ae.tests.ui.TC6_VerifyProducts"/>
+            <class name="com.ae.tests.ui.TC7_SearchProduct"/>
+            <class name="com.ae.tests.ui.TC8_AddToCart"/>
+            <class name="com.ae.tests.ui.TC10_CheckoutBeforeRegister"/>
+            <class name="com.ae.tests.ui.TC9_CheckoutRegister"/>
+        </classes>
     </test>
 
 </suite>

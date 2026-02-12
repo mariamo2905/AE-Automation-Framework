@@ -6,13 +6,15 @@ import com.ae.utils.WaitUtils;
 import io.qameta.allure.Description;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.testng.ITestResult;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
+
+import java.time.Duration;
 
 public class TC8_AddToCart {
 
@@ -20,19 +22,41 @@ public class TC8_AddToCart {
  @Severity(SeverityLevel.CRITICAL)
  @Test
  public void testAddToCart() {
+
   WebDriver driver = DriverManager.getDriver();
   driver.get("https://automationexercise.com");
 
-  WebElement firstProduct = driver.findElement(By.cssSelector(".features_items .product-image-wrapper"));
-  WaitUtils.waitForClickable(driver, firstProduct).click();
+  WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
 
-  WebElement addToCartBtn = driver.findElement(By.cssSelector(".cart"));
-  WaitUtils.waitForClickable(driver, addToCartBtn).click();
+  // Close any potential iframe (ads) if present
+  try {
+   WebElement iframe = driver.findElement(By.xpath("//iframe[contains(@id,'aswift')]"));
+   driver.switchTo().frame(iframe);
 
-  WebElement cartModal = driver.findElement(By.id("cartModal"));
-  WaitUtils.waitForVisible(driver, cartModal);
+   // Optional: click "close" if the iframe has a close button
+   // If no close button, just switch back
+   driver.switchTo().defaultContent();
+  } catch (NoSuchElementException ignored) {
+   // No iframe found → continue
+  }
 
-  Assert.assertTrue(cartModal.isDisplayed(), "Expected cart modal to appear after adding product");
+  // Wait for products section to be visible
+  WaitUtils.waitForVisible(driver, By.cssSelector(".features_items"));
+
+  // Locate first "Add to Cart" button
+  WebElement firstAddToCart = wait.until(ExpectedConditions.elementToBeClickable(
+          By.xpath("(//a[contains(@class,'add-to-cart')])[1]")));
+
+  // Scroll into view and click using JS to avoid iframe overlays
+  ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", firstAddToCart);
+  ((JavascriptExecutor) driver).executeScript("arguments[0].click();", firstAddToCart);
+
+  // Wait for cart modal to appear
+  WebElement cartModal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cartModal")));
+
+  // Assert modal is displayed
+  Assert.assertTrue(cartModal.isDisplayed(),
+          "Expected cart modal to appear after adding product");
  }
 
  @AfterMethod(alwaysRun = true)

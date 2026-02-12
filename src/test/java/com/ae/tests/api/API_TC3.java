@@ -22,7 +22,7 @@ public class API_TC3 {
                 .get("/brandsList")
                 .then()
                 .statusCode(200)
-                .body(notNullValue())
-                .body("size()", greaterThan(0));
+                .body("brands.size()", greaterThan(0)) // ✅ corrected path
+                .body("brands.brand", not(empty()));
     }
 }

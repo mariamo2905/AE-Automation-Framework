@@ -21,22 +21,30 @@ public class TC7_SearchProduct {
  @Description("UI TC07: Search for a product and verify results appear.")
  @Severity(SeverityLevel.CRITICAL)
  @Test
- public void testSearchProducts() {
-  WebDriver driver = DriverManager.getDriver();
-  driver.get("https://automationexercise.com");
 
-  WebElement searchBox = driver.findElement(By.id("search_product"));
-  WaitUtils.waitForVisible(driver, searchBox);
+ public void testSearchProducts() {
+
+  WebDriver driver = DriverManager.getDriver();
+
+  // 1️⃣ Open products page directly
+  driver.get("https://automationexercise.com/products");
+
+  // 2️⃣ Wait for search box
+  WebElement searchBox = WaitUtils.waitForVisible(driver,
+          By.id("search_product"));
+
+  // 3️⃣ Type product
   searchBox.sendKeys("Dress");
 
+  // 4️⃣ Click search
   driver.findElement(By.id("submit_search")).click();
 
-  List<WebElement> results = driver.findElements(By.cssSelector(".features_items .product-image-wrapper"));
-  for (WebElement r : results) {
-   WaitUtils.waitForVisible(driver, r);
-  }
+  // 5️⃣ Wait for results
+  List<WebElement> results = WaitUtils.waitForAllVisible(driver,
+          By.cssSelector(".product-image-wrapper"));
 
-  Assert.assertTrue(results.size() > 0, "Expected search results for 'Dress'");
+  Assert.assertTrue(results.size() > 0,
+          "Expected search results for 'Dress'");
  }
 
  @AfterMethod(alwaysRun = true)

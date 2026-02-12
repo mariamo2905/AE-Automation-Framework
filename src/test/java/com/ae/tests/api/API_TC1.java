@@ -22,7 +22,7 @@ public class API_TC1 {
                 .get("/productsList")
                 .then()
                 .statusCode(200)
-                .body(notNullValue())
-                .body("size()", greaterThan(0));
+                .body("products", notNullValue())
+                .body("products.size()", greaterThan(0));
     }
 }
